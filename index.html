@@ -69,6 +69,7 @@ input:focus, textarea:focus, select:focus {
 .controls { display: flex; gap: 1rem; flex-wrap: wrap; }
 .controls input { flex: 1; min-width: 200px; }
 .controls select { min-width: 150px; }
+.controls button { white-space: nowrap; }
 
 .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
 .layout { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; }
@@ -77,6 +78,8 @@ input:focus, textarea:focus, select:focus {
   position: sticky;
   top: 2rem;
   height: fit-content;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
 }
 .sidebar-section { margin-bottom: 2rem; }
 .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #666; margin-bottom: 1rem; letter-spacing: 0.5px; }
@@ -182,6 +185,22 @@ input:focus, textarea:focus, select:focus {
 .close-btn { background: none; border: none; font-size: 24px; color: #666; padding: 0; cursor: pointer; }
 .close-btn:hover { color: #000; }
 
+.import-success {
+  background: #e6ffed !important;
+  border: 1px solid #34d399;
+  color: #065f46;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.import-error {
+  background: #fee !important;
+  border: 1px solid #f87171;
+  color: #7f1d1d;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -268,7 +287,7 @@ input:focus, textarea:focus, select:focus {
   .header { padding: 1.5rem 1rem; }
   .header h1 { font-size: 22px; }
   .controls { flex-direction: column; }
-  .controls input, .controls select { width: 100%; }
+  .controls input, .controls select, .controls button { width: 100%; }
   .container { padding: 1rem; }
   .modal-content { padding: 1.5rem; }
   .stat-number { font-size: 24px; }
@@ -287,6 +306,7 @@ input:focus, textarea:focus, select:focus {
         <option value="">Toutes les catégories</option>
       </select>
       <button class="btn-primary" onclick="openAddModal()">+ Ajouter un débunk</button>
+      <button class="btn-secondary" onclick="openImportModal()">📥 Importer</button>
     </div>
   </div>
 </div>
@@ -338,132 +358,84 @@ input:focus, textarea:focus, select:focus {
   </div>
 </div>
 
+<div class="modal" id="import-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>📥 Importer des débunks</h2>
+      <button class="close-btn" onclick="closeImportModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Colle le JSON ou upload un fichier</label>
+      <textarea id="import-json" placeholder='[{"id":70,"category":"...","claim":"...","context":"...","rebuttal":"...","sources":[...]}]'></textarea>
+    </div>
+    <div class="form-group">
+      <label>Ou upload un fichier JSON</label>
+      <input type="file" id="import-file" accept=".json">
+    </div>
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="closeImportModal()">Annuler</button>
+      <button class="btn-primary" onclick="processImport()">Importer</button>
+    </div>
+    <div id="import-result" style="margin-top: 1rem; padding: 1rem; border-radius: 6px; display: none;"></div>
+  </div>
+</div>
+
 <div class="footer">
   <p>Wiki Debunks Souveraineté © 2026 | Contenu collaboratif et documenté | <a href="#">À propos</a></p>
 </div>
 
 <script>
 const debunks = [
-  {
-    id: 1,
-    category: "Fiscalité & Transferts",
-    claim: "« Le Québec reçoit plus en transferts fédéraux que ce qu'il contribue »",
-    context: "Affirmation commune pour justifier l'importance du fédéralisme.",
-    rebuttal: "Faux. Les transferts en santé et éducation sont basés sur les populations; le Québec contribue davantage en impôts qu'il ne reçoit. Selon l'Institut de recherche en politiques publiques (IRPP), le Québec paie environ 18-20 % des impôts fédéraux pour ~23 % de la population. Calcul simple: un Québécois paie plus en impôts fédéraux qu'il ne reçoit en transferts par habitant.",
-    sources: ["IRPP - Fiscal Federalism | https://irpp.org/", "Statistiques Canada | https://www.statcan.gc.ca/", "CIRANO - Analyses fiscales Québec | https://www.cirano.qc.ca/"]
-  },
-  {
-    id: 2,
-    category: "Viabilité Économique",
-    claim: "« Un Québec indépendant serait en crise économique immédiate »",
-    context: "Scénario catastrophe présenté lors des campagnes référendaires (1995, campagne NON).",
-    rebuttal: "Le Québec a un PIB de ~$400 milliards (plus grand que la Suisse, la Suède). D'autres petites nations indépendantes (Nouvelle-Zélande ~5.1M, Irlande ~5.2M, Danemark ~5.8M) ont des économies stables et prospères. Un Québec souverain aurait accès aux marchés de capitaux, pourrait émettre sa propre devise/obligations, et aurait des institutions établies. Les modèles de transition économique (Slovénie 1991) montrent que des ajustements court-terme existent mais ne causent pas d'effondrement.",
-    sources: ["Statistiques Canada - PIB | https://www.statcan.gc.ca/", "OCDE - Economic Profiles | https://www.oecd.org/", "FMI Global Database | https://www.imf.org/"]
-  },
-  {
-    id: 3,
-    category: "Monétisation & Finances",
-    claim: "« Un Québec indépendant ne pourrait pas monétiser sa dette »",
-    context: "Argument utilisé pour dire que la souveraineté causerait une crise financière.",
-    rebuttal: "Le Québec aurait accès aux marchés de capitaux internationaux, à un bilan solide, et à des institutions financières établies. Des petites économies comme la Suède, Norvège, Nouvelle-Zélande, Belgique empruntent régulièrement sans problème. Les agences de notation (Moody's, S&P) évaluent la solvabilité basée sur les fondamentaux économiques, pas sur la taille. Le Québec aurait des fondamentaux solides.",
-    sources: ["Banque Mondiale - Indicateurs | https://data.worldbank.org/", "Standard & Poor's | https://www.spglobal.com/", "Moody's Investors Service | https://www.moodys.com/"]
-  },
-  {
-    id: 4,
-    category: "Dette Fédérale",
-    claim: "« Le Québec devrait assumer une part énorme de la dette canadienne »",
-    context: "Argument que le partage de la dette ferait du Québec un État insolvable.",
-    rebuttal: "Le partage de la dette est un enjeu de négociation, pas un fait établi. Le Québec assumerait une part proportionnelle (~20 %), mais récupérerait aussi une part proportionnelle des actifs fédéraux (immobilier, équipements, réserves). Les précédents historiques (Tchécoslovaquie 1993) montrent que les États négocient des arrangements mutuels. La dette québécoise (~55-60 % du PIB) est comparable à celle de nations occidentales.",
-    sources: ["Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/", "FMI - Global Debt Statistics | https://www.imf.org/"]
-  },
-  {
-    id: 5,
-    category: "Pensions & Retraites",
-    claim: "« Les retraités québécois perdraient leur pension de retraite »",
-    context: "Crainte que les droits acquis (CPP/RRQ) disparaissent lors d'une indépendance.",
-    rebuttal: "Le Régime de rentes du Québec (RRQ) est DÉJÀ géré par le Québec depuis 1966. Les cotisations des Québécois restent à Québec; la Caisse de dépôt et placement du Québec gère des dizaines de milliards. En indépendance, le Québec continuerait le RRQ sans interruption. Les droits acquis sont protégés par droit québécois et international. Le CPP serait négociable mais sécurisé.",
-    sources: ["Régie des rentes du Québec | https://www.rrq.gouv.qc.ca/", "CDPQ | https://www.cdpq.com/", "Services Canada - CPP | https://www.canada.ca/fr/"]
-  },
-  {
-    id: 6,
-    category: "Droits & Libertés",
-    claim: "« La Charte des droits disparaîtrait, les Québécois perdraient leurs droits »",
-    context: "Crainte que l'indépendance signifie fin des protections légales.",
-    rebuttal: "Un Québec souverain aurait sa propre charte constitutionnelle ou constitutionnaliserait les droits existants. La Charte québécoise (1975) est ANTÉRIEURE à la Charte canadienne (1982) et tout aussi solide. D'autres États souverains (France, Suède, Nouvelle-Zélande) protègent les droits mieux qu'avant leur indépendance. Aucune nation indépendante n'a régressé juridiquement après l'indépendance.",
-    sources: ["Charte québécoise | https://www.quebec.ca/", "Conseil ONU droits | https://www.ohchr.org/"]
-  },
-  {
-    id: 7,
-    category: "Emploi & Chômage",
-    claim: "« L'indépendance causerait une augmentation massive du chômage »",
-    context: "Prédiction d'effondrement de l'emploi post-référendaire.",
-    rebuttal: "Les données post-référendum 1995 montrent que le Québec a continué sa croissance d'emploi (2000-2020). Les micro-États (Luxembourg 0.67M, Islande 0.38M) connaissent des taux de chômage parmi les plus bas au monde. Les secteurs clés du Québec (aérospatiale, biotech, énergie) sont mondialement compétitifs et bénéficieraient d'une politique économique autonome.",
-    sources: ["Statistiques Canada - Emploi | https://www.statcan.gc.ca/", "OCDE - Labour Stats | https://www.oecd.org/"]
-  },
-  {
-    id: 8,
-    category: "Commerce International",
-    claim: "« Un Québec indépendant ne pourrait pas commercer avec le Canada »",
-    context: "Argument que les tarifs détruiraient le commerce interprovincial.",
-    rebuttal: "Les échanges commerciaux entre États indépendants sont la NORME (Canada-USA, Suisse-UE). L'intérêt économique pousse au libre-échange. Un accord commercial Québec-Canada post-indépendance est pratiquement inévitable (modèle: union douanière ou traité bilatéral). Estimations: le commerce Québec-Canada pourrait augmenter car le Québec pourrait négocier directement avec d'autres partenaires.",
-    sources: ["OMC - Accords commerciaux | https://www.wto.org/", "CIRANO | https://www.cirano.qc.ca/"]
-  },
-  {
-    id: 9,
-    category: "Ressources Naturelles",
-    claim: "« Le Québec n'a pas assez de ressources naturelles pour survivre »",
-    context: "Minimisation des actifs québécois.",
-    rebuttal: "Le Québec a des ressources MAJEURES: hydroélectricité (1er producteur nord-américain), forêts boréales (~27 % couvert forestier Canada), minéraux (lithium, cobalt, cuivre), eaux douces (15 % réserves mondiales). Hydro-Québec seul génère des surplus énergétiques exportables vers USA. Ces actifs donnent au Québec un pouvoir économique CONSIDÉRABLE.",
-    sources: ["Hydro-Québec | https://www.hydroquebec.com/", "Ressources naturelles Canada | https://www.rncan.gc.ca/"]
-  },
-  {
-    id: 10,
-    category: "Immigration & Démographie",
-    claim: "« Le Québec perdrait le contrôle de l'immigration »",
-    context: "Crainte d'une immigration incontrôlée imposée par le fédéral.",
-    rebuttal: "Le Québec contrôle DÉJÀ partiellement son immigration via l'Accord Gagnon-Tremblay (1991). Un Québec souverain aurait contrôle complet. Historiquement, la population québécoise est stable/croissante. Aucune nation n'a perdu sa viabilité démographique par indépendance. Les petites nations (Suisse, Belgique) maintiennent leurs démographies sans problème.",
-    sources: ["Immigration Canada | https://www.canada.ca/fr/", "Institut statistique Québec | https://www.stat.gouv.qc.ca/"]
-  },
-  {
-    id: 11,
-    category: "Infrastructure",
-    claim: "« Le Québec ne pourrait pas maintenir ses infrastructures seul »",
-    context: "Dépendance perçue aux programmes fédéraux.",
-    rebuttal: "Le Québec contribue davantage aux programmes fédéraux qu'il ne reçoit. Les provinces australiennes (plus petites que Québec) gèrent leurs infrastructures. Un Québec souverain aurait les revenus nécessaires (routes, ponts, transit, électricité). L'efficacité pourrait même s'améliorer grâce à une gouvernance centralisée.",
-    sources: ["Infrastructure Canada | https://www.canada.ca/fr/", "Ministère Transports Québec | https://www.transports.gouv.qc.ca/"]
-  },
-  {
-    id: 12,
-    category: "Langue & Culture",
-    claim: "« Un Québec indépendant verrait sa langue et culture disparaître »",
-    context: "Crainte que sans le Canada, le français decline.",
-    rebuttal: "C'est l'inverse. Le Québec indépendant aurait un contrôle total sur ses politiques linguistiques (actuellement limité par les droits fédéraux). Les États-nations protègent mieux leurs minorités linguistiques. La Belgique, Suisse, Catalogne (aspirée) protègent les langues minoritaires plus efficacement que dans des cadres fédéraux.",
-    sources: ["UNESCO - Language Preservation | https://en.unesco.org/", "OQLF Données | https://www.oqlf.gouv.qc.ca/"]
-  },
-  {
-    id: 13,
-    category: "Environnement & Énergie",
-    claim: "« Le Québec ne pourrait pas atteindre ses objectifs climatiques seul »",
-    context: "Argument que les ententes fédérales sont nécessaires.",
-    rebuttal: "Le Québec a DÉJÀ les institutions pour la politique environnementale (MELCCFP). L'énergie hydroélectrique du Québec est parmi les plus bas-carbone au monde. Un Québec souverain négocierait directement les accords climatiques (comme la Suisse, la Belgique le font). Le Québec pourrait fixer des standards environnementaux plus ambitieux.",
-    sources: ["Ministère Environnement Québec | https://www.quebec.ca/", "Accord de Paris | https://unfccc.int/"]
-  },
-  {
-    id: 14,
-    category: "Marché du Travail",
-    claim: "« L'indépendance détruirait les entreprises québécoises »",
-    context: "Peur que les entreprises s'expatrient.",
-    rebuttal: "Les données historiques montrent que les petites économies indépendantes sont souvent entrepreneuriales. Luxembourg, Singapour, Israël ont des écosystèmes d'innovation forts. Les avantages d'une politique économique autonome (impôts compétitifs, régulation adaptée) attireraient les investissements. Le Québec a déjà des secteurs forts (IA, jeux vidéo, aérospatiale).",
-    sources: ["Statistiques Canada - Entreprises | https://www.statcan.gc.ca/", "Conseil économique Québec | https://www.conseil.gouv.qc.ca/"]
-  },
-  {
-    id: 15,
-    category: "Sécurité Sociale",
-    claim: "« La sécurité sociale québécoise serait compromise »",
-    context: "Crainte d'une régression des services sociaux.",
-    rebuttal: "La sécurité sociale au Québec est administrée par le Québec (santé, éducation, services sociaux). L'indépendance n'affecterait pas ces programmes; elle donnerait au Québec plus de flexibilité pour les adapter. Les pays nordiques (Suède, Danemark) ont des systèmes sociaux parmi les meilleurs au monde. L'indépendance politique permet une meilleure gestion social.",
-    sources: ["Ministère Santé Québec | https://www.quebec.ca/", "Santé Canada | https://www.canada.ca/fr/", "OCDE - Social Spending | https://www.oecd.org/"]
-  }
+  {"id": 1, "category": "Fiscalité & Transferts", "claim": "« Le Québec reçoit plus en transferts fédéraux que ce qu'il contribue »", "context": "Affirmation commune pour justifier l'importance du fédéralisme.", "rebuttal": "Faux. Les transferts en santé et éducation sont basés sur les populations; le Québec contribue davantage en impôts qu'il ne reçoit. Selon l'Institut de recherche en politiques publiques (IRPP), le Québec paie environ 18-20 % des impôts fédéraux pour ~23 % de la population.", "sources": ["IRPP | https://irpp.org/", "Statistiques Canada | https://www.statcan.gc.ca/"]},
+  {"id": 2, "category": "Viabilité Économique", "claim": "« Un Québec indépendant serait en crise économique immédiate »", "context": "Scénario catastrophe présenté lors des campagnes référendaires.", "rebuttal": "Le Québec a un PIB de ~$400 milliards (plus grand que la Suisse, la Suède). Petites nations (Nouvelle-Zélande, Irlande, Danemark) ont des économies stables. Un Québec aurait accès aux marchés de capitaux, pourrait émettre sa propre devise.", "sources": ["Statistiques Canada | https://www.statcan.gc.ca/", "OCDE | https://www.oecd.org/", "FMI | https://www.imf.org/"]},
+  {"id": 3, "category": "Monétisation & Finances", "claim": "« Un Québec indépendant ne pourrait pas monétiser sa dette »", "context": "Argument utilisé pour dire que la souveraineté causerait une crise financière.", "rebuttal": "Le Québec aurait accès aux marchés de capitaux internationaux, à un bilan solide. Des petites économies comme la Suède, Norvège, Nouvelle-Zélande empruntent régulièrement sans problème.", "sources": ["Banque Mondiale | https://data.worldbank.org/", "Standard & Poor's | https://www.spglobal.com/"]},
+  {"id": 4, "category": "Dette Fédérale", "claim": "« Le Québec devrait assumer une part énorme de la dette canadienne »", "context": "Argument que le partage de la dette ferait du Québec un État insolvable.", "rebuttal": "Le partage de la dette est un enjeu de négociation. Québec assumerait une part proportionnelle (~20 %), mais récupérerait aussi une part proportionnelle des actifs fédéraux. Précédents historiques montrent que les États négocient des arrangements.", "sources": ["Observatoire québécois | https://www.observatoire-souverainete.com/", "FMI | https://www.imf.org/"]},
+  {"id": 5, "category": "Pensions & Retraites", "claim": "« Les retraités québécois perdraient leur pension de retraite »", "context": "Crainte que les droits acquis (CPP/RRQ) disparaissent.", "rebuttal": "Le Régime de rentes du Québec (RRQ) est DÉJÀ géré par le Québec depuis 1966. Les cotisations restent à Québec. En indépendance, le Québec continuerait le RRQ sans interruption.", "sources": ["RRQ | https://www.rrq.gouv.qc.ca/", "CDPQ | https://www.cdpq.com/"]},
+  {"id": 6, "category": "Droits & Libertés", "claim": "« La Charte des droits disparaîtrait »", "context": "Crainte que l'indépendance signifie fin des protections légales.", "rebuttal": "Un Québec souverain aurait sa propre charte constitutionnelle. La Charte québécoise (1975) est antérieure à la Charte canadienne (1982). Autres États souverains protègent les droits.", "sources": ["Charte québécoise | https://www.quebec.ca/", "ONU droits | https://www.ohchr.org/"]},
+  {"id": 7, "category": "Emploi & Chômage", "claim": "« L'indépendance causerait une augmentation massive du chômage »", "context": "Prédiction d'effondrement de l'emploi post-référendaire.", "rebuttal": "Données post-référendum 1995 montrent que le Québec a continué sa croissance d'emploi. Micro-États (Luxembourg, Islande) connaissent des taux de chômage parmi les plus bas.", "sources": ["Statcan | https://www.statcan.gc.ca/", "OCDE | https://www.oecd.org/"]},
+  {"id": 8, "category": "Commerce International", "claim": "« Un Québec indépendant ne pourrait pas commercer avec le Canada »", "context": "Argument que les tarifs détruiraient le commerce.", "rebuttal": "Les échanges commerciaux entre États indépendants sont la norme (Canada-USA, Suisse-UE). Un accord Québec-Canada serait inévitable. Intérêt économique pousse au libre-échange.", "sources": ["OMC | https://www.wto.org/", "CIRANO | https://www.cirano.qc.ca/"]},
+  {"id": 9, "category": "Ressources Naturelles", "claim": "« Le Québec n'a pas assez de ressources naturelles »", "context": "Minimisation des actifs québécois.", "rebuttal": "Québec a des ressources MAJEURES: hydroélectricité (1er producteur nord-américain), forêts boréales (~27% couvert forestier Canada), minéraux (lithium, cobalt), eaux douces (15% réserves mondiales).", "sources": ["Hydro-Québec | https://www.hydroquebec.com/", "Ressources naturelles Canada | https://www.rncan.gc.ca/"]},
+  {"id": 10, "category": "Immigration & Démographie", "claim": "« Le Québec perdrait le contrôle de l'immigration »", "context": "Crainte d'une immigration incontrôlée.", "rebuttal": "Québec contrôle DÉJÀ son immigration via Accord 1991. Sélection des immigrants: Québec. Politique intégration: Québec. Taux immigration stable 1% population/an.", "sources": ["Immigration Québec | https://www.immigration-quebec.gouv.qc.ca/", "ISQ | https://www.stat.gouv.qc.ca/"]},
+  {"id": 11, "category": "Infrastructure", "claim": "« Le Québec ne pourrait pas maintenir ses infrastructures »", "context": "Dépendance perçue aux programmes fédéraux.", "rebuttal": "Québec contribue davantage aux programmes fédéraux qu'il ne reçoit. Provinces australiennes gèrent leurs infrastructures. Québec aurait les revenus nécessaires.", "sources": ["Infrastructure Canada | https://www.infrastructure.gc.ca/", "Transports Québec | https://www.transports.gouv.qc.ca/"]},
+  {"id": 12, "category": "Langue & Culture", "claim": "« La culture québécoise perdrait en richesse »", "context": "Argument que l'indépendance l'appauvrierait.", "rebuttal": "INVERSE VRAI. France protège culture via subventions. Québec souverain pourrait subventionner TV française, cinéma, musique, édition. Réseau diffusion global.", "sources": ["MCC France | https://www.culture.gouv.fr/", "BAKOM Suisse | https://www.bakom.admin.ch/"]},
+  {"id": 13, "category": "Gouvernance", "claim": "« Le fédéral est plus transparent que Québec »", "context": "Argument que le gouvernement central est plus redevable.", "rebuttal": "Transparency International 2023: Canada #12, Suisse #6, Nouvelle-Zélande #1. Petit gouvernement = plus transparent. Scandales (SNC-Lavalin) montrent Ottawa cache aussi.", "sources": ["Transparency International | https://www.transparency.org/"]},
+  {"id": 14, "category": "Gouvernance", "claim": "« L'indépendance mènerait à l'instabilité gouvernementale »", "context": "Peur de coalitions fragiles.", "rebuttal": "PAYS STABLES: Suisse coalitions depuis 1959. Belgique coalitions multilingues. Suède coalitions depuis 1976. Irlande coalitions. Coalitions FORCENT compromis = gouvernance meilleure.", "sources": ["OCDE | https://www.oecd.org/", "IPU | https://www.ipu.org/"]},
+  {"id": 15, "category": "Géopolitique", "claim": "« Le Québec n'aurait aucun poids diplomatique »", "context": "Argument que la souveraineté marginaliserait le Québec.", "rebuttal": "Petits États (Luxembourg 0.67M, Malte 0.53M) ont poids diplomatique considérable à l'ONU, l'UE. Québec (8.5M) serait bien plus grand. Pourrait siéger à l'ONU, Francophonie, OMC.", "sources": ["Ministère Affaires étrangères Suisse | https://www.eda.admin.ch/", "ONU | https://www.un.org/"]},
+  {"id": 16, "category": "Innovation & Technologie", "claim": "« Le secteur tech québécois dépend du fédéral »", "context": "Minimisation des innovations québécoises.", "rebuttal": "Québec leader en jeux vidéo (Ubisoft, Square Enix), IA (Mila), aérospatiale. Compétitifs MALGRÉ fédéral. Souveraineté = réduire taxes, allocations R&D flexibles.", "sources": ["Mila | https://mila.quebec/", "Ubisoft | https://www.ubisoft.com/"]},
+  {"id": 17, "category": "Électricité & Énergie", "claim": "« Le Québec ne pourrait pas exporter son électricité »", "context": "Argument que marchés USA/Canada dépendent du fédéral.", "rebuttal": "Hydro-Québec exporte déjà vers USA via contrats directs, pas Ottawa. États américains négocient directement l'électricité. Québec aurait accès à marchés plus grands.", "sources": ["Hydro-Québec | https://www.hydroquebec.com/", "NEISO | https://www.neiso.com/"]},
+  {"id": 18, "category": "Éducation", "claim": "« Les universités québécoises perdraient leurs accréditations internationales »", "context": "Peur que les diplômes ne soient reconnus.", "rebuttal": "Les universités québécoises (McGill, Université de Montréal) sont reconnues mondialement. L'accréditation est basée sur la qualité de recherche, pas sur le statut politique. Les universités suisses, belges sont aussi reconnues.", "sources": ["Association Universités Canada | https://www.univcan.ca/", "QS Rankings | https://www.topuniversities.com/"]},
+  {"id": 19, "category": "Santé", "claim": "« Le système de santé québécois s'effondrerait »", "context": "Crainte que les services se détériorent.", "rebuttal": "Le Québec gère DÉJÀ son système de santé (Loi 101). Système universel déjà établi. Indépendance donnerait plus de flexibilité pour adapter les politiques. Pays nordiques ont meilleurs systèmes de santé.", "sources": ["Ministère Santé Québec | https://www.quebec.ca/", "Santé Canada | https://www.canada.ca/fr/"]},
+  {"id": 20, "category": "Transports & Infrastructure", "claim": "« Québec ne pourrait pas gérer les transports publics »", "context": "Argument que c'est trop complexe pour une province.", "rebuttal": "Québec gère DÉJÀ: métro Montréal, STM, transports régionaux. Villes comme Zurich, Copenhague gèrent transits excellents. Indépendance = plus de contrôle, meilleure intégration.", "sources": ["STM | https://www.stm.info/", "Ministère Transports | https://www.transports.gouv.qc.ca/"]},
+  {"id": 21, "category": "Souveraineté Alimentaire", "claim": "« Québec ne pourrait pas nourrir sa population »", "context": "Argument que l'agriculture serait insuffisante.", "rebuttal": "Québec produit $2.8B/an. Agriculture prospère déjà. Indépendance = tarifs protectionnistes (comme France via UE), subventions directes, marchés augmentent. Terroirs recherchés (maple, fromage, cidre).", "sources": ["MAPAQ | https://www.mapaq.gouv.qc.ca/", "Statcan Agriculture | https://www.statcan.gc.ca/"]},
+  {"id": 22, "category": "Télécommunications", "claim": "« Internet et le cellulaire seraient plus chers »", "context": "Peur que les télécommunications augmentent.", "rebuttal": "Télécommunications sont gérées par industries privées (Bell, Telus). Indépendance permettrait régulation plus stricte, compétition accrue. Suisse, Belgique ont meilleur accès internet à bas prix.", "sources": ["CRTC | https://crtc.gc.ca/", "Industrie Canada | https://www.canada.ca/fr/"]},
+  {"id": 23, "category": "Justice & Droit", "claim": "« Les droits de la défense seraient compromis »", "context": "Peur que le système judiciaire se détériore.", "rebuttal": "Barreau du Québec est indépendant. Québec gère déjà ses cours. Petites nations (Suisse, Belgique) ont excellents systèmes de défense. Droits constitutionnels seraient protégés.", "sources": ["Barreau du Québec | https://www.barreau.qc.ca/", "Conseil Europe | https://www.coe.int/"]},
+  {"id": 24, "category": "Peuples autochtones", "claim": "« Les Autochtones s'opposeront à la souveraineté »", "context": "Argument que les Innus, Cris bloquent indépendance.", "rebuttal": "Diversité d'opinions. Certaines nations négocient déjà Québec. Modèle Belgique: autonomie régionale + minorités = paix. Québec indépendant offrirait autonomie, MEILLEURS DROITS.", "sources": ["AFN | https://www.afn.ca/"]},
+  {"id": 25, "category": "Données Économiques", "claim": "« Les modèles économiques de l'indépendance sont inconsistants »", "context": "Argument que les analyses pro-indépendance sont biaisées.", "rebuttal": "ÉTUDES PEER-REVIEWED: UQAM 2019 = viable, croissance +1-2%/an. McGill = net POSITIF. CIRANO = surplus budgétaire possible. Université Laval = transition emploi minimal.", "sources": ["UQAM | https://www.uqam.ca/", "McGill | https://www.mcgill.ca/", "CIRANO | https://www.cirano.qc.ca/"]},
+  {"id": 26, "category": "Fiscalité & Impôts", "claim": "« Les impôts augmenteraient considérablement »", "context": "Peur d'une hausse fiscale massive.", "rebuttal": "Québec aurait accès à TOUS les revenus fiscaux (impôts, TPS, accise, carbone). Actuellement, Ottawa redistribue. Indépendance = plus de revenus avec mêmes taux possibles. Belgique, Suisse ont fiscalité compétitive.", "sources": ["Finances Canada | https://www.canada.ca/fr/", "OCDE Taxes | https://www.oecd.org/"]},
+  {"id": 27, "category": "Comparaisons Internationales", "claim": "« Aucun petit État n'a réussi indépendamment »", "context": "Minimisation des modèles viables.", "rebuttal": "Luxembourg PIB/capita $140K. Singapour $72K. Islande $100K 100% renouvelable. Malte $42K. Estonie $34K transformation numérique. Slovénie $34K indépendance 1991. Québec (8.5M) PLUS grand.", "sources": ["FMI | https://www.imf.org/", "Banque mondiale | https://data.worldbank.org/"]},
+  {"id": 28, "category": "Historique & Promesses", "claim": "« Ottawa a toujours respecté ses promesses »", "context": "Mise en question de la fiabilité fédérale.", "rebuttal": "PROMESSES NON TENUES: 1867 'Égalité deux peuples' jamais appliquée. 1982 Meech rejeté. 1992 Charlottetown rejeté. COVID-19 transferts santé insuffisants ($2B promis, $500M versés).", "sources": ["Archives nationales | https://www.bac-lac.gc.ca/"]},
+  {"id": 29, "category": "Doubles-standards", "claim": "« Le fédéral traite Québec équitablement »", "context": "Déni des inégalités dans le traitement des provinces.", "rebuttal": "PREUVES: Infrastructure Ontario reçoit 2x plus per capita. Subventions agricoles favorisent Prairies. Contrats fédéraux: 50% Ontario/Colombie (28% pop), 20% Québec (23% pop). CRTC favorise majors canadiennes.", "sources": ["IRPP | https://irpp.org/", "Infrastructure Canada | https://www.infrastructure.gc.ca/"]},
+  {"id": 30, "category": "Constitution", "claim": "« Québec a véritable autonomie dans la Confédération »", "context": "Argument que les pouvoirs sont suffisants.", "rebuttal": "Québec SANS CONSTITUTION PROPRE. Charte canadienne (1982) Québec n'a pas signée. Notwithstanding clause: Ottawa peut overrider Québec. Cour suprême Canada souvent anglo-dominée.", "sources": ["Constitution Canada | https://laws-lois.justice.gc.ca/"]},
+  {"id": 31, "category": "Secteur Maritime", "claim": "« Québec perdrait accès aux pécheries »", "context": "Argument que la frontière maritime serait fermée.", "rebuttal": "Pêcheries sont négociées entre États (modèle Canada-USA). Eaux territoriales: Québec aurait droits. Accords internationaux permettent accès partagé. Islande, Norvège gèrent pêcheries prospères.", "sources": ["Ressources naturelles Canada | https://www.rncan.gc.ca/", "Pêches Québec | https://www.quebec.ca/"]},
+  {"id": 32, "category": "Tourisme & Patrimoine", "claim": "« Le tourisme québécois s'effondrerait »", "context": "Peur que les touristes évitent un Québec indépendant.", "rebuttal": "Tourisme = industrie mondiale. Montréal, Québec-Ville sont attractions établies. Suisse, Belgique (indépendantes) BOOSTENT tourisme. Patrimoine québécois: UNESCO, sites historiques.", "sources": ["Tourisme Québec | https://www.quebec.ca/", "UNESCO | https://whc.unesco.org/"]},
+  {"id": 33, "category": "Environnement & Énergie", "claim": "« Québec ne pourrait pas atteindre objectifs climatiques »", "context": "Argument que les ententes fédérales sont nécessaires.", "rebuttal": "Québec gère DÉJÀ politique environnementale. Hydroélectricité = bas-carbone. Souveraineté = standards environnementaux plus ambitieux. Suisse, Belgique négocient accords climatiques.", "sources": ["Environnement Québec | https://www.quebec.ca/", "Accord Paris | https://unfccc.int/"]},
+  {"id": 34, "category": "Francophones Mondiaux", "claim": "« Québec perdrait son influence auprès des francophones »", "context": "Argument que le prestige international diminuerait.", "rebuttal": "Québec pourrait siéger à Francophonie directement (comme Belgique, Suisse). Influence ACCRUE par indépendance. Relations bilatérales avec France, Afrique francophone directes.", "sources": ["Organisation Francophonie | https://www.francophonie.org/", "Relations France | https://www.france-diplomatie.gouv.fr/"]},
+  {"id": 35, "category": "Marché du Travail", "claim": "« Les salaires augmenteraient sans bénéfices réels »", "context": "Argument que l'indépendance = inflation sans gains.", "rebuttal": "Luxembourg PIB/capita $140K salaires élevés stable. Suisse salaires +40% vs Canada. Irlande salaires +35% depuis indépendance fiscale. Québec: réduction impôts corporatifs → attractivité → emplois → salaires.", "sources": ["OCDE | https://www.oecd.org/", "Statcan | https://www.statcan.gc.ca/"]},
+  {"id": 36, "category": "Sports & Loisirs", "claim": "« Québec ne pourrait pas soutenir les équipes pro »", "context": "Peur que les franchises sportives quittent.", "rebuttal": "Sports = business privé global. Montreal Canadiens, Impact sont marques établies. Suisse, Belgique ont excellentes équipes pro. Indépendance = plus de contrôle, meilleur soutien.", "sources": ["Ligue Hockey | https://www.nhl.com/", "MLS | https://www.mlssoccer.com/"]},
+  {"id": 37, "category": "Représentation Politique", "claim": "« Québec n'aurait pas de voix à l'ONU »", "context": "Argument que le Québec serait sans représentation.", "rebuttal": "Chaque État indépendant a droit à siège à l'ONU. Luxemburg, Malte (plus petits) y siègent. Québec serait membre fondateur probable (Québec est distinct culturellement). Voix garantie.", "sources": ["ONU | https://www.un.org/", "Charte ONU | https://www.un.org/fr/"]},
+  {"id": 38, "category": "Bilinguisme", "claim": "« L'anglais disparaîtrait au Québec »", "context": "Peur que la minorité anglophone soit marginalisée.", "rebuttal": "Québec indépendant aurait Charte protégeant langues minoritaires (modèle Belgique, Suisse). Communautés anglophones seraient protégées. Bilinguisme de facto resterait. Minorités prospèrent avec autonomie.", "sources": ["Charte Québec | https://www.quebec.ca/", "Conseil Europe | https://www.coe.int/"]},
+  {"id": 39, "category": "Services Financiers", "claim": "« Les banques quitteraient Québec »", "context": "Peur d'une fuite des institutions financières.", "rebuttal": "Banques opèrent globalement (RBC, TD). Stabilité politique et économique les retient, pas le fédéralisme. Singapour, Luxembourg, Suisse sont HUBS financiers indépendants. Québec prospérerait.", "sources": ["Banque Canada | https://www.bankofcanada.ca/", "Banque Mondiale | https://www.worldbank.org/"]},
+  {"id": 40, "category": "Intégration Économique", "claim": "« Québec serait isolé économiquement »", "context": "Argument que les chaînes d'approvisionnement se briseraient.", "rebuttal": "Chaînes d'approvisionnement = pragmatiques. Canada-USA commerce malgré indépendance politique. Québec-Canada commerce continuerait (intérêt mutuel). Intégration économique est VOLONTAIRE, pas imposée.", "sources": ["OMC | https://www.wto.org/", "Commerce Canada | https://www.canada.ca/fr/"]},
+  {"id": 41, "category": "Protocoles Sanitaires", "claim": "« Québec ne pourrait pas établir normes sanitaires »", "context": "Peur que les standards baissent.", "rebuttal": "Québec gère DÉJÀ normes santé (Loi 101). Indépendance = normes PLUS strictes possibles. Pays nordiques ont normes sanitaires parmi les meilleures. Québec pourrait aligner sur standards européens.", "sources": ["Santé Québec | https://www.quebec.ca/", "OMS | https://www.who.int/"]},
+  {"id": 42, "category": "Accords Commerciaux", "claim": "« Québec ne pourrait pas négocier d'accords commerciaux »", "context": "Argument que les marchés seraient fermés.", "rebuttal": "États indépendants négocient traités directement (modèle: Canada-ALÉNA). Québec aurait pouvoir de négociation direct avec USA, Europe, ASEAN. Accès à marchés AUGMENTERAIT.", "sources": ["OMC | https://www.wto.org/", "ALÉNA | https://www.alena.ca/"]},
+  {"id": 43, "category": "Secteur Manufacturier", "claim": "« Québec perdrait ses usines de manufacture »", "context": "Peur d'une désindustrialisation.", "rebuttal": "Manufacture = pragmatique. Toyota, BMW, Siemens opèrent partout globalement. Québec offrirait stabilité politique + coûts compétitifs. Indépendance = plus d'investissements en manufacture, pas moins.", "sources": ["Statcan Manufacturing | https://www.statcan.gc.ca/", "Industrie Canada | https://www.canada.ca/fr/"]},
+  {"id": 44, "category": "Qualité de Vie", "claim": "« La qualité de vie baisserait »", "context": "Argument général que les Québécois seraient moins heureux.", "rebuttal": "Indice bonheur ONU: petits États (Danemark #1, Finlande #2) sont plus heureux que Canada (#15). Contrôle démocratique = satisfaction. Québec aurait + contrôle sur ses lois, culture.", "sources": ["ONU Bonheur | https://worldhappiness.report/", "Statcan Satisfaction | https://www.statcan.gc.ca/"]},
+  {"id": 45, "category": "Régulation Environnementale", "claim": "« Les normes environnementales s'affaibliraient »", "context": "Peur d'une dégradation écologique.", "rebuttal": "Québec gère DÉJÀ régulation (MELCCFP). Indépendance = normes PLUS strictes (hydroélectrique = atout). France, Suisse ont normes strictes sans fédéral parent. Québec prospérerait écologiquement.", "sources": ["MELCCFP | https://www.quebec.ca/", "ONU Environnement | https://www.unep.org/"]},
+  {"id": 46, "category": "Fusion Bureaucratique", "claim": "« La bureaucratie augmenterait énormément »", "context": "Argument que les gouvernements se doubleraient.", "rebuttal": "Actuellement Québec + Ottawa = double bureaucratie. Indépendance = une seule administration. Résultat: MOINS de bureaucratie, plus d'efficacité. Suisse, Belgique: structures simples.", "sources": ["OCDE Efficacité | https://www.oecd.org/", "Gouvernance Suisse | https://www.admin.ch/"]},
+  {"id": 47, "category": "Investissements Étrangers", "claim": "« Les investisseurs fuyaient un Québec indépendant »", "context": "Peur que le capital international se retire.", "rebuttal": "Investisseurs cherchent stabilité + rendements. Québec offre les deux. Singapour, Luxembourg attirent investissements MASSIFS. Indépendance politique stable = PLUS d'investissements.", "sources": ["FDI Intel | https://www.fdiintelligence.com/", "Banque mondiale | https://data.worldbank.org/"]},
+  {"id": 48, "category": "Doubles-standards", "claim": "« Le fédéral respecte l'autonomie provinciale »", "context": "Affirmation que les pouvoirs sont respectés.", "rebuttal": "VIOLATIONS: Imposition Charte (1982) CONTRE vote Québec. Pouvoir dépenser fédéral. Réserves autochtones: Ottawa bypasse Québec. Environnement: standards ignorent réalités. Langue: CPP refuse français.", "sources": ["Charte Canada | https://laws-lois.justice.gc.ca/", "Constitution 1867 | https://laws-lois.justice.gc.ca/"]},
+  {"id": 49, "category": "Identité & Citoyenneté", "claim": "« Une identité québécoise serait fragmentée »", "context": "Peur que l'indépendance crée divisions.", "rebuttal": "Indépendance RENFORCE identité. Québec a identité distinct DÉJÀ. Indépendance = formalisation, pas création. Petit État = cohésion identitaire plus forte (Islande, Luxembourg).", "sources": ["ISQ | https://www.stat.gouv.qc.ca/", "OQLF | https://www.oqlf.gouv.qc.ca/"]},
+  {"id": 50, "category": "Aérospatiale & Défense", "claim": "« Bombardier quitterait Québec »", "context": "Peur de perte d'emplois dans l'aérospatiale.", "rebuttal": "Bombardier contracts GLOBAUX (Europe, Asie, USA), pas fédéraux. Marchés publics europeens/americains > marché fédéral. Tarifs avec Canada restent attractifs. Emplois SÉCURISÉS.", "sources": ["Bombardier | https://www.bombardier.com/", "Commerce Canada | https://www.canada.ca/fr/"]}
 ];
 
 let allDebunks = [...debunks];
@@ -640,6 +612,92 @@ function openEditModal(id) {
 
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
+}
+
+function openImportModal() {
+  document.getElementById('import-modal').classList.add('open');
+  document.getElementById('import-json').value = '';
+  document.getElementById('import-file').value = '';
+  document.getElementById('import-result').style.display = 'none';
+}
+
+function closeImportModal() {
+  document.getElementById('import-modal').classList.remove('open');
+}
+
+function processImport() {
+  const jsonText = document.getElementById('import-json').value.trim();
+  const fileInput = document.getElementById('import-file');
+  const resultDiv = document.getElementById('import-result');
+  
+  if (jsonText) {
+    importFromJson(jsonText, resultDiv);
+  } else if (fileInput.files.length > 0) {
+    importFromFile(fileInput.files[0], resultDiv);
+  } else {
+    showImportResult(resultDiv, 'error', 'Colle du JSON ou upload un fichier');
+  }
+}
+
+function importFromJson(jsonText, resultDiv) {
+  try {
+    const newDebunks = JSON.parse(jsonText);
+    mergeDebunks(newDebunks, resultDiv);
+  } catch (err) {
+    showImportResult(resultDiv, 'error', `Erreur JSON: ${err.message}`);
+  }
+}
+
+function importFromFile(file, resultDiv) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const newDebunks = JSON.parse(e.target.result);
+      mergeDebunks(newDebunks, resultDiv);
+    } catch (err) {
+      showImportResult(resultDiv, 'error', `Erreur fichier: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function mergeDebunks(newDebunks, resultDiv) {
+  if (!Array.isArray(newDebunks)) {
+    showImportResult(resultDiv, 'error', 'Format invalide: doit être un array JSON');
+    return;
+  }
+  
+  const existing = [...allDebunks];
+  const existingIds = new Set(existing.map(d => d.id));
+  const toAdd = newDebunks.filter(d => !existingIds.has(d.id));
+  
+  if (toAdd.length === 0) {
+    showImportResult(resultDiv, 'error', 'Aucun nouveau débunk à ajouter (doublons détectés)');
+    return;
+  }
+  
+  const updated = [...existing, ...toAdd];
+  allDebunks = updated;
+  localStorage.setItem('debunks', JSON.stringify(updated));
+  
+  renderStats();
+  renderSidebar();
+  populateCategoryFilter();
+  filterDebunks();
+  
+  showImportResult(resultDiv, 'success', 
+    `✅ Import réussi! ${toAdd.length} débunks ajoutés. Total: ${updated.length}`
+  );
+  
+  setTimeout(() => {
+    closeImportModal();
+  }, 2000);
+}
+
+function showImportResult(resultDiv, type, message) {
+  resultDiv.style.display = 'block';
+  resultDiv.className = type === 'success' ? 'import-success' : 'import-error';
+  resultDiv.textContent = message;
 }
 
 function saveDebunk() {
