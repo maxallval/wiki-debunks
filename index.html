@@ -143,20 +143,101 @@ aside { width: 180px; background: #fafafa; overflow-y: auto; padding: 1rem; bord
 <script>
 let debunks = JSON.parse(localStorage.getItem('debunks')) || [
   {
-    id: 1,
-    category: "Transferts",
-    claim: "« Le Québec reçoit plus en transferts fédéraux que ce qu'il contribue »",
-    context: "Affirmation commune pour justifier l'importance du fédéralisme.",
-    rebuttal: "Faux. Les transferts en santé et éducation sont basés sur les populations; le Québec contribue davantage en impôts qu'il ne reçoit. Selon l'Institut de recherche en politiques publiques (IRPP), le Québec paie environ 18-20 % des impôts fédéraux pour ~23 % de la population.",
-    sources: ["IRPP - Fiscal Federalism | https://irpp.org/", "Statistiques Canada | https://www.statcan.gc.ca/"]
+    "id": 1,
+    "category": "Transferts",
+    "claim": "« Le Québec reçoit plus en transferts fédéraux que ce qu'il contribue »",
+    "context": "Affirmation commune pour justifier l'importance du fédéralisme.",
+    "rebuttal": "Faux. Les transferts en santé et éducation sont basés sur les populations; le Québec contribue davantage en impôts qu'il ne reçoit. Selon l'Institut de recherche en politiques publiques (IRPP), le Québec paie environ 18-20 % des impôts fédéraux pour ~23 % de la population.",
+    "sources": [
+      "IRPP - Fiscal Federalism | https://irpp.org/",
+      "Statistiques Canada | https://www.statcan.gc.ca/"
+    ]
   },
   {
-    id: 2,
-    category: "Économie",
-    claim: "« Un Québec indépendant ne pourrait pas monétiser sa dette »",
-    context: "Argument utilisé pour dire que la souveraineté causerait une crise économique.",
-    rebuttal: "Le Québec aurait accès aux marchés de capitaux, à un bilan solide, et à des institutions. D'autres petites économies (Suède, Norvège, Nouvelle-Zélande) démontrent qu'une indépendance budgétaire est tout à fait viable.",
-    sources: ["Banque Mondiale - Indicateurs | https://data.worldbank.org/", "Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/"]
+    "id": 2,
+    "category": "Économie",
+    "claim": "« Un Québec indépendant ne pourrait pas monétiser sa dette »",
+    "context": "Argument utilisé pour dire que la souveraineté causerait une crise économique.",
+    "rebuttal": "Le Québec aurait accès aux marchés de capitaux, à un bilan solide, et à des institutions. D'autres petites économies (Suède, Norvège, Nouvelle-Zélande) démontrent qu'une indépendance budgétaire est tout à fait viable.",
+    "sources": [
+      "Banque Mondiale - Indicateurs | https://data.worldbank.org/",
+      "Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/"
+    ]
+  },
+  {
+    "id": 3,
+    "category": "Fiscalités & Transferts",
+    "claim": "« Le Québec dépend financièrement du Canada et ne pourrait pas survivre seul »",
+    "context": "Argument fédéraliste courant pour montrer l'interdépendance économique.",
+    "rebuttal": "Le Québec paie environ 18-20 % des impôts fédéraux avec 23 % de la population. Les transferts en santé/éducation sont par capita, donc le Québec reçoit moins qu'il ne contribue. Un Québec souverain aurait accès aux revenus fiscaux (impôts, TPS, droits d'accise, taxes sur le carbone, etc.) actuellement versés à Ottawa. Des analyses indépendantes (IRPP, Institut Économique) démontrent que le Québec dispose des revenus suffisants pour financer ses services publics.",
+    "sources": [
+      "Statistiques Canada - Comptes économiques provinciaux | https://www.statcan.gc.ca/",
+      "Institut de recherche en politiques publiques (IRPP) - Fiscal Federalism | https://irpp.org/",
+      "CIRANO - Analyses fiscales Québec | https://www.cirano.qc.ca/"
+    ]
+  },
+  {
+    "id": 4,
+    "category": "Viabilité économique",
+    "claim": "« Un Québec indépendant serait en crise économique immédiate »",
+    "context": "Scénario catastrophe présenté lors de campagnes référendaires (ex: 1995, campagne NON)",
+    "rebuttal": "Le Québec a un PIB de ~$400 milliards (plus grand que la Suisse, la Suède). D'autres petites nations indépendantes (Nouvelle-Zélande, Irlande, Danemark, Belgique ~12M habitants) ont des économies stables et prospères. Un Québec souverain aurait accès aux marchés de capitaux, pourrait émettre sa propre devise/obligations, aurait des institutions établies. Les modèles de transition économique (comme ceux de la Slovénie 1991) montrent que des ajustements court-terme existent mais ne causent pas d'effondrement.",
+    "sources": [
+      "Statistiques Canada - PIB provinciaux | https://www.statcan.gc.ca/",
+      "OCDE - Small countries economic profiles | https://www.oecd.org/",
+      "Banque mondiale - Indicateurs économiques | https://data.worldbank.org/",
+      "Étude COSEF (Commission Statut Économique Financier) 1978 | Archives nationales"
+    ]
+  },
+  {
+    "id": 5,
+    "category": "Dette & Passifs financiers",
+    "claim": "« Le Québec devrait assumer une part énorme de la dette canadienne, ce qui le ruinerait »",
+    "context": "Argument que le partage de la dette ferait du Québec un État insolvable",
+    "rebuttal": "Le partage de la dette fédérale entre provinces est un enjeu de négociation, pas déterminé à l'avance. Le Québec devrait assumer une part proportionnelle (~20 %), mais aussi récupérer une part proportionnelle des actifs fédéraux (immobilier, équipements, réserves). Les précédents historiques (Tchécoslovaquie 1993, Belgique, Yougoslavie) montrent que les États négocient des arrangements. De plus, la dette québécoise actuelle (~55-60 % du PIB) est comparable à celle d'autres nations occidentales.",
+    "sources": [
+      "Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/",
+      "Finance Canada - Rapport sur la dette fédérale | https://www.canada.ca/fr/",
+      "FMI - Global Debt Statistics | https://www.imf.org/",
+      "Études scientifiques Université du Québec à Montréal (UQAM) sur partage d'actifs"
+    ]
+  },
+  {
+    "id": 6,
+    "category": "RRQ vs CPP",
+    "claim": "« Les retraités québécois perdraient leur pension de retraite si le Québec devient souverain »",
+    "context": "Peur que les droits acquis (CPP/RRQ) disparaissent lors d'une indépendance",
+    "rebuttal": "Le Régime de rentes du Québec (RRQ) est déjà géré par le Québec depuis 1966. Les cotisations des Québécois au RRQ restent à Québec (Caisse de dépôt et placement du Québec gère des dizaines de milliards). En indépendance, le Québec continuerait simplement le RRQ. Les droits acquis sont protégés par droit québécois et international. Le CPP (Régime canadien) pour les contribuables fédéraux serait l'équivalent d'une pension fédérale — négociable mais sécurisé.",
+    "sources": [
+      "Régie des rentes du Québec (RRQ) | https://www.rrq.gouv.qc.ca/",
+      "Caisse de dépôt et placement du Québec | https://www.cdpq.com/",
+      "Services Canada - CPP | https://www.canada.ca/fr/",
+      "Analyses juridiques UQAM - Droits acquis"
+    ]
+  },
+  {
+    "id": 7,
+    "category": "Droits & Libertés",
+    "claim": "« La Charte des droits et libertés disparaîtrait, les Québécois perdraient leurs droits »",
+    "context": "Crainte que l'indépendance signifie fin des protections légales",
+    "rebuttal": "Un Québec souverain aurait sa propre charte ou constitutionnaliserait les droits existants. La Charte québécoise (1975) est antérieure à la Charte canadienne (1982) et tout aussi solide. D'autres États souverains (France, Suède, Nouvelle-Zélande) protègent les droits mieux qu'avant leur indépendance grâce à des constitutions fortes. Aucune nation indépendante n'a régressé juridiquement après l'indépendance.",
+    "sources": [
+      "Charte québécoise des droits et libertés de la personne | https://www.quebec.ca/",
+      "Charte canadienne des droits et libertés | https://laws-lois.justice.gc.ca/",
+      "Conseil des droits de l'homme (ONU) | https://www.ohchr.org/"
+    ]
+  },
+  {
+    "id": 8,
+    "category": "Emploie & Bien être",
+    "claim": "« L'indépendance causerait une augmentation massive du chômage »",
+    "context": "Prédiction d'effondrement de l'emploi post-référendaire",
+    "rebuttal": "Les données économiques post-référendaires (1995) montrent que le Québec a continué sa croissance d'emploi durant les années 2000-2020. Les modèles d'autres micro-États (Luxembourg, Islande) montrent que l'indépendance n'entraîne pas de chômage structurel. Les secteurs clés du Québec (aérospatiale, biotech, énergie) sont compétitifs et bénéficieraient d'une politique économique autonome. Les études économétriques ne montrent pas de corrélation causal entre indépendance et chômage.",
+    "sources": [
+      "Statistiques Canada - Taux de chômage provinciaux | https://www.statcan.gc.ca/",
+      "OCDE - Labour Force Statistics | https://www.oecd.org/",
+      "Décrochage-chômage Québec 1995-2020 (données historiques) | Archives"
+    ]
   }
 ];
 
