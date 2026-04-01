@@ -4,335 +4,619 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Wiki collaboratif pour débunker les affirmations fallacieuses du gouvernement canadien concernant la souveraineté du Québec.">
-<meta name="og:title" content="Wiki Debunks — Souveraineté">
-<meta name="og:description" content="Base de données collaborative de réfutations documentées sur les enjeux de souveraineté québécoise.">
-<title>Wiki Debunks — Souveraineté</title>
+<meta name="og:title" content="Wiki Debunks Souveraineté">
+<meta name="og:description" content="Base de données collaborative de réfutations documentées.">
+<title>Wiki Debunks Souveraineté</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #222; background: #f5f5f5; }
-a { color: #0066cc; text-decoration: none; }
-a:hover { text-decoration: underline; }
-button { font-family: inherit; cursor: pointer; border: none; background: #fff; color: #222; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 1rem; transition: all 0.2s; }
-button:hover { background: #f0f0f0; border-color: #999; }
-input, textarea { font-family: inherit; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; color: #222; background: #fff; }
-input:focus, textarea:focus { outline: none; border-color: #0066cc; box-shadow: 0 0 0 2px rgba(0,102,204,0.1); }
-
-@media (prefers-color-scheme: dark) {
-  body { color: #e0e0e0; background: #1a1a1a; }
-  input, textarea { background: #2a2a2a; color: #e0e0e0; border-color: #444; }
-  button { background: #2a2a2a; color: #e0e0e0; border-color: #444; }
-  button:hover { background: #333; }
-  .container > main { background: #1a1a1a; }
-  .debunk-item { background: #2a2a2a; border-color: #444; }
-  .debunk-item:hover { border-color: #666; }
-  .debunk-detail { background: #2a2a2a; }
-  .debunk-category { background: #333; color: #aaa; }
-  .sources { background: #333; border-color: #555; }
-  aside { background: #252525; border-color: #444; }
-  header { background: #252525; border-color: #444; }
-  .modal-content { background: #2a2a2a; }
+html { scroll-behavior: smooth; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; 
+  color: #1a1a1a; 
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  line-height: 1.6;
+}
+a { color: #0052cc; text-decoration: none; transition: color 0.2s; }
+a:hover { color: #003a99; text-decoration: underline; }
+button { 
+  font-family: inherit; 
+  cursor: pointer; 
+  border: none; 
+  border-radius: 6px; 
+  padding: 0.625rem 1.25rem; 
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+.btn-primary { background: #0052cc; color: white; }
+.btn-primary:hover { background: #003a99; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,82,204,0.3); }
+.btn-secondary { background: white; color: #0052cc; border: 1px solid #0052cc; }
+.btn-secondary:hover { background: #f0f4ff; }
+input, textarea, select { 
+  font-family: inherit; 
+  padding: 0.75rem;
+  border: 1px solid #ddd; 
+  border-radius: 6px; 
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+input:focus, textarea:focus, select:focus { 
+  outline: none; 
+  border-color: #0052cc; 
+  box-shadow: 0 0 0 3px rgba(0,82,204,0.1);
 }
 
-.container { display: flex; flex-direction: column; height: 100vh; }
-header { background: #fff; padding: 1rem; border-bottom: 1px solid #ddd; }
-header h1 { font-size: 20px; font-weight: 600; margin-bottom: 0.75rem; }
-.search-bar { display: flex; gap: 0.5rem; }
-.search-bar input { flex: 1; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e0e0e0; background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%); }
+  input, textarea, select { background: #2a2a2a; color: #e0e0e0; border-color: #444; }
+  a { color: #5eb3ff; }
+  a:hover { color: #7ec5ff; }
+  .card { background: #2a2a2a; border-color: #444; }
+  .card:hover { border-color: #666; }
+  .badge { background: #333; color: #aaa; }
+  .header { background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%); border-color: #444; }
+}
 
-main { display: flex; flex: 1; overflow: hidden; }
-aside { width: 180px; background: #fafafa; overflow-y: auto; padding: 1rem; border-right: 1px solid #ddd; }
-.category { margin-bottom: 1rem; }
-.category h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 0.75rem; letter-spacing: 0.5px; }
-.category button { display: block; width: 100%; text-align: left; background: transparent; border: none; padding: 0.5rem 0.5rem; font-size: 13px; margin-bottom: 0.25rem; border-radius: 4px; }
-.category button:hover { background: #e8e8e8; }
-.category button.active { background: #e8e8e8; font-weight: 500; }
+.header {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.header-content { max-width: 1400px; margin: 0 auto; }
+.header h1 { font-size: 28px; font-weight: 700; margin-bottom: 0.5rem; }
+.header p { color: #666; font-size: 15px; margin-bottom: 1.5rem; }
+.controls { display: flex; gap: 1rem; flex-wrap: wrap; }
+.controls input { flex: 1; min-width: 200px; }
+.controls select { min-width: 150px; }
 
-.content { flex: 1; overflow-y: auto; padding: 1.5rem; }
-.debunk-item { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; cursor: pointer; transition: all 0.2s; }
-.debunk-item:hover { border-color: #0066cc; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.debunk-item.active { border-color: #0066cc; background: #f9f9f9; }
-.debunk-claim { font-weight: 500; font-size: 14px; margin-bottom: 0.5rem; }
-.debunk-meta { font-size: 12px; color: #666; }
-.debunk-category { display: inline-block; background: #f0f0f0; padding: 0.25rem 0.75rem; border-radius: 12px; margin-right: 0.5rem; font-size: 12px; font-weight: 500; }
+.container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
+.layout { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; }
 
-.debunk-detail { display: none; }
-.debunk-detail.show { display: block; }
-.debunk-detail h2 { font-size: 18px; margin-bottom: 1.5rem; font-weight: 600; }
-.section { margin-bottom: 1.5rem; }
-.section h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 0.75rem; letter-spacing: 0.5px; }
-.section p { line-height: 1.6; margin-bottom: 0.5rem; }
-.sources { padding: 1rem; background: #f9f9f9; border-left: 3px solid #0066cc; border-radius: 4px; }
-.source { font-size: 13px; margin-bottom: 0.75rem; }
-.source a { color: #0066cc; }
+.sidebar {
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+}
+.sidebar-section { margin-bottom: 2rem; }
+.sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #666; margin-bottom: 1rem; letter-spacing: 0.5px; }
+.sidebar-btn { 
+  display: block; 
+  width: 100%; 
+  text-align: left; 
+  background: white; 
+  border: 1px solid #e0e0e0; 
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.sidebar-btn:hover { background: #f5f7fa; border-color: #0052cc; }
+.sidebar-btn.active { background: #0052cc; color: white; border-color: #0052cc; }
 
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+.main-content { }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e0e0e0; text-align: center; }
+.stat-number { font-size: 32px; font-weight: 700; color: #0052cc; }
+.stat-label { font-size: 12px; color: #666; margin-top: 0.5rem; text-transform: uppercase; }
+
+.debunk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+.card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #0052cc, #5eb3ff);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+.card:hover {
+  border-color: #0052cc;
+  box-shadow: 0 8px 24px rgba(0,82,204,0.15);
+  transform: translateY(-4px);
+}
+.card:hover::before { transform: scaleX(1); }
+
+.badge {
+  display: inline-block;
+  background: #f0f4ff;
+  color: #0052cc;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.card-title { font-size: 16px; font-weight: 600; margin: 0.75rem 0; line-height: 1.4; }
+.card-meta { font-size: 13px; color: #666; margin-top: 1rem; }
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
 .modal.open { display: flex; }
-.modal-content { background: #fff; border-radius: 8px; padding: 2rem; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
-.modal-content h2 { margin-bottom: 1.5rem; font-size: 18px; font-weight: 600; }
-.form-group { margin-bottom: 1.25rem; }
-.form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 13px; }
-.form-group input, .form-group textarea { width: 100%; }
-.modal-buttons { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-.btn-primary { background: #0066cc; color: #fff; border-color: #0066cc; font-weight: 500; }
-.btn-primary:hover { background: #0052a3; }
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+.modal-header h2 { font-size: 20px; }
+.close-btn { background: none; border: none; font-size: 24px; color: #666; padding: 0; cursor: pointer; }
+.close-btn:hover { color: #000; }
 
-@media (prefers-color-scheme: dark) {
-  .modal-content { background: #2a2a2a; }
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 14px;
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+.form-actions { display: flex; gap: 1rem; margin-top: 2rem; }
+
+.detail-view {
+  display: none;
+}
+.detail-view.show {
+  display: block;
+}
+.detail-header {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.detail-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 1rem; line-height: 1.4; }
+.detail-section {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+.detail-section h3 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #0052cc;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+}
+.detail-section p { color: #333; line-height: 1.8; margin-bottom: 0.75rem; }
+.sources-list {
+  list-style: none;
+}
+.sources-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.sources-list li:last-child { border-bottom: none; }
+.sources-list a {
+  word-break: break-word;
+  display: inline-block;
 }
 
-@media (max-width: 768px) {
-  main { flex-direction: column; }
-  aside { width: 100%; border-right: none; border-bottom: 1px solid #ddd; max-height: 120px; overflow-x: auto; display: flex; gap: 1rem; padding: 0.75rem; }
-  .category { display: flex; gap: 0.75rem; margin: 0; flex-wrap: nowrap; }
-  .category h3 { display: none; }
-  .category button { flex-shrink: 0; white-space: nowrap; }
-  .content { padding: 1rem; }
-  .modal-content { width: 95%; padding: 1.5rem; }
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+}
+.empty-state h2 { font-size: 20px; margin-bottom: 0.75rem; }
+
+.footer {
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+  margin-top: 3rem;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; top: 0; }
+  .sidebar-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .debunk-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .header { padding: 1.5rem 1rem; }
+  .header h1 { font-size: 22px; }
+  .controls { flex-direction: column; }
+  .controls input, .controls select { width: 100%; }
+  .container { padding: 1rem; }
+  .modal-content { padding: 1.5rem; }
+  .stat-number { font-size: 24px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>Wiki Debunks — Souveraineté</h1>
-    <div class="search-bar">
-      <input type="text" id="search" placeholder="Chercher...">
-      <button onclick="openAddModal()">+ Ajouter</button>
-    </div>
-  </header>
 
-  <main>
-    <aside id="sidebar"></aside>
-    <div class="content">
-      <div id="debunk-list"></div>
-      <div id="debunk-detail" class="debunk-detail"></div>
+<div class="header">
+  <div class="header-content">
+    <h1>🇶🇨 Wiki Debunks — Souveraineté</h1>
+    <p>Base de données collaborative de réfutations documentées sur les enjeux de souveraineté québécoise</p>
+    <div class="controls">
+      <input type="text" id="search" placeholder="Chercher un débunk...">
+      <select id="categoryFilter">
+        <option value="">Toutes les catégories</option>
+      </select>
+      <button class="btn-primary" onclick="openAddModal()">+ Ajouter un débunk</button>
     </div>
-  </main>
+  </div>
+</div>
+
+<div class="container">
+  <div id="stats" class="stats"></div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <div id="debunk-list" class="debunk-grid"></div>
+      <div id="detail-view" class="detail-view"></div>
+      <div id="empty-state" class="empty-state"></div>
+    </main>
+  </div>
 </div>
 
 <div class="modal" id="modal">
   <div class="modal-content">
-    <h2 id="modal-title">Ajouter un debunk</h2>
+    <div class="modal-header">
+      <h2 id="modal-title">Ajouter un débunk</h2>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
     <div class="form-group">
       <label>Catégorie</label>
-      <input type="text" id="form-category" placeholder="ex: Économie, Transferts, Fiscalité...">
+      <input type="text" id="form-category" placeholder="ex: Économie, Transferts...">
     </div>
     <div class="form-group">
       <label>Affirmation (ce qui est faux)</label>
-      <textarea id="form-claim" placeholder="Entrez l'affirmation à débunker..." rows="3"></textarea>
+      <textarea id="form-claim" placeholder="Entrez l'affirmation à débunker..."></textarea>
     </div>
     <div class="form-group">
       <label>Contexte</label>
-      <textarea id="form-context" placeholder="Qui l'a dite? Quand? Où?" rows="2"></textarea>
+      <textarea id="form-context" placeholder="Qui l'a dite? Quand? Où?"></textarea>
     </div>
     <div class="form-group">
       <label>Réfutation</label>
-      <textarea id="form-rebuttal" placeholder="L'explication et les faits qui contredisent..." rows="4"></textarea>
+      <textarea id="form-rebuttal" placeholder="L'explication et les faits qui contredisent..."></textarea>
     </div>
     <div class="form-group">
       <label>Sources (Titre | URL, une par ligne)</label>
-      <textarea id="form-sources" placeholder="Statistiques Canada | https://...\nRapport IRPP | https://..." rows="3"></textarea>
+      <textarea id="form-sources" placeholder="Statistiques Canada | https://...\nRapport IRPP | https://..."></textarea>
     </div>
-    <div class="modal-buttons">
-      <button onclick="closeModal()">Annuler</button>
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
       <button class="btn-primary" onclick="saveDebunk()">Publier</button>
     </div>
   </div>
 </div>
 
+<div class="footer">
+  <p>Wiki Debunks Souveraineté © 2026 | Contenu collaboratif et documenté | <a href="#">À propos</a></p>
+</div>
+
 <script>
-let debunks = JSON.parse(localStorage.getItem('debunks')) || [
+const debunks = [
   {
-    "id": 1,
-    "category": "Transferts",
-    "claim": "« Le Québec reçoit plus en transferts fédéraux que ce qu'il contribue »",
-    "context": "Affirmation commune pour justifier l'importance du fédéralisme.",
-    "rebuttal": "Faux. Les transferts en santé et éducation sont basés sur les populations; le Québec contribue davantage en impôts qu'il ne reçoit. Selon l'Institut de recherche en politiques publiques (IRPP), le Québec paie environ 18-20 % des impôts fédéraux pour ~23 % de la population.",
-    "sources": [
-      "IRPP - Fiscal Federalism | https://irpp.org/",
-      "Statistiques Canada | https://www.statcan.gc.ca/"
-    ]
+    id: 1,
+    category: "Fiscalité & Transferts",
+    claim: "« Le Québec reçoit plus en transferts fédéraux que ce qu'il contribue »",
+    context: "Affirmation commune pour justifier l'importance du fédéralisme.",
+    rebuttal: "Faux. Les transferts en santé et éducation sont basés sur les populations; le Québec contribue davantage en impôts qu'il ne reçoit. Selon l'Institut de recherche en politiques publiques (IRPP), le Québec paie environ 18-20 % des impôts fédéraux pour ~23 % de la population. Calcul simple: un Québécois paie plus en impôts fédéraux qu'il ne reçoit en transferts par habitant.",
+    sources: ["IRPP - Fiscal Federalism | https://irpp.org/", "Statistiques Canada | https://www.statcan.gc.ca/", "CIRANO - Analyses fiscales Québec | https://www.cirano.qc.ca/"]
   },
   {
-    "id": 2,
-    "category": "Économie",
-    "claim": "« Un Québec indépendant ne pourrait pas monétiser sa dette »",
-    "context": "Argument utilisé pour dire que la souveraineté causerait une crise économique.",
-    "rebuttal": "Le Québec aurait accès aux marchés de capitaux, à un bilan solide, et à des institutions. D'autres petites économies (Suède, Norvège, Nouvelle-Zélande) démontrent qu'une indépendance budgétaire est tout à fait viable.",
-    "sources": [
-      "Banque Mondiale - Indicateurs | https://data.worldbank.org/",
-      "Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/"
-    ]
+    id: 2,
+    category: "Viabilité Économique",
+    claim: "« Un Québec indépendant serait en crise économique immédiate »",
+    context: "Scénario catastrophe présenté lors des campagnes référendaires (1995, campagne NON).",
+    rebuttal: "Le Québec a un PIB de ~$400 milliards (plus grand que la Suisse, la Suède). D'autres petites nations indépendantes (Nouvelle-Zélande ~5.1M, Irlande ~5.2M, Danemark ~5.8M) ont des économies stables et prospères. Un Québec souverain aurait accès aux marchés de capitaux, pourrait émettre sa propre devise/obligations, et aurait des institutions établies. Les modèles de transition économique (Slovénie 1991) montrent que des ajustements court-terme existent mais ne causent pas d'effondrement.",
+    sources: ["Statistiques Canada - PIB | https://www.statcan.gc.ca/", "OCDE - Economic Profiles | https://www.oecd.org/", "FMI Global Database | https://www.imf.org/"]
   },
   {
-    "id": 3,
-    "category": "Fiscalités & Transferts",
-    "claim": "« Le Québec dépend financièrement du Canada et ne pourrait pas survivre seul »",
-    "context": "Argument fédéraliste courant pour montrer l'interdépendance économique.",
-    "rebuttal": "Le Québec paie environ 18-20 % des impôts fédéraux avec 23 % de la population. Les transferts en santé/éducation sont par capita, donc le Québec reçoit moins qu'il ne contribue. Un Québec souverain aurait accès aux revenus fiscaux (impôts, TPS, droits d'accise, taxes sur le carbone, etc.) actuellement versés à Ottawa. Des analyses indépendantes (IRPP, Institut Économique) démontrent que le Québec dispose des revenus suffisants pour financer ses services publics.",
-    "sources": [
-      "Statistiques Canada - Comptes économiques provinciaux | https://www.statcan.gc.ca/",
-      "Institut de recherche en politiques publiques (IRPP) - Fiscal Federalism | https://irpp.org/",
-      "CIRANO - Analyses fiscales Québec | https://www.cirano.qc.ca/"
-    ]
+    id: 3,
+    category: "Monétisation & Finances",
+    claim: "« Un Québec indépendant ne pourrait pas monétiser sa dette »",
+    context: "Argument utilisé pour dire que la souveraineté causerait une crise financière.",
+    rebuttal: "Le Québec aurait accès aux marchés de capitaux internationaux, à un bilan solide, et à des institutions financières établies. Des petites économies comme la Suède, Norvège, Nouvelle-Zélande, Belgique empruntent régulièrement sans problème. Les agences de notation (Moody's, S&P) évaluent la solvabilité basée sur les fondamentaux économiques, pas sur la taille. Le Québec aurait des fondamentaux solides.",
+    sources: ["Banque Mondiale - Indicateurs | https://data.worldbank.org/", "Standard & Poor's | https://www.spglobal.com/", "Moody's Investors Service | https://www.moodys.com/"]
   },
   {
-    "id": 4,
-    "category": "Viabilité économique",
-    "claim": "« Un Québec indépendant serait en crise économique immédiate »",
-    "context": "Scénario catastrophe présenté lors de campagnes référendaires (ex: 1995, campagne NON)",
-    "rebuttal": "Le Québec a un PIB de ~$400 milliards (plus grand que la Suisse, la Suède). D'autres petites nations indépendantes (Nouvelle-Zélande, Irlande, Danemark, Belgique ~12M habitants) ont des économies stables et prospères. Un Québec souverain aurait accès aux marchés de capitaux, pourrait émettre sa propre devise/obligations, aurait des institutions établies. Les modèles de transition économique (comme ceux de la Slovénie 1991) montrent que des ajustements court-terme existent mais ne causent pas d'effondrement.",
-    "sources": [
-      "Statistiques Canada - PIB provinciaux | https://www.statcan.gc.ca/",
-      "OCDE - Small countries economic profiles | https://www.oecd.org/",
-      "Banque mondiale - Indicateurs économiques | https://data.worldbank.org/",
-      "Étude COSEF (Commission Statut Économique Financier) 1978 | Archives nationales"
-    ]
+    id: 4,
+    category: "Dette Fédérale",
+    claim: "« Le Québec devrait assumer une part énorme de la dette canadienne »",
+    context: "Argument que le partage de la dette ferait du Québec un État insolvable.",
+    rebuttal: "Le partage de la dette est un enjeu de négociation, pas un fait établi. Le Québec assumerait une part proportionnelle (~20 %), mais récupérerait aussi une part proportionnelle des actifs fédéraux (immobilier, équipements, réserves). Les précédents historiques (Tchécoslovaquie 1993) montrent que les États négocient des arrangements mutuels. La dette québécoise (~55-60 % du PIB) est comparable à celle de nations occidentales.",
+    sources: ["Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/", "FMI - Global Debt Statistics | https://www.imf.org/"]
   },
   {
-    "id": 5,
-    "category": "Dette & Passifs financiers",
-    "claim": "« Le Québec devrait assumer une part énorme de la dette canadienne, ce qui le ruinerait »",
-    "context": "Argument que le partage de la dette ferait du Québec un État insolvable",
-    "rebuttal": "Le partage de la dette fédérale entre provinces est un enjeu de négociation, pas déterminé à l'avance. Le Québec devrait assumer une part proportionnelle (~20 %), mais aussi récupérer une part proportionnelle des actifs fédéraux (immobilier, équipements, réserves). Les précédents historiques (Tchécoslovaquie 1993, Belgique, Yougoslavie) montrent que les États négocient des arrangements. De plus, la dette québécoise actuelle (~55-60 % du PIB) est comparable à celle d'autres nations occidentales.",
-    "sources": [
-      "Observatoire québécois de la souveraineté | https://www.observatoire-souverainete.com/",
-      "Finance Canada - Rapport sur la dette fédérale | https://www.canada.ca/fr/",
-      "FMI - Global Debt Statistics | https://www.imf.org/",
-      "Études scientifiques Université du Québec à Montréal (UQAM) sur partage d'actifs"
-    ]
+    id: 5,
+    category: "Pensions & Retraites",
+    claim: "« Les retraités québécois perdraient leur pension de retraite »",
+    context: "Crainte que les droits acquis (CPP/RRQ) disparaissent lors d'une indépendance.",
+    rebuttal: "Le Régime de rentes du Québec (RRQ) est DÉJÀ géré par le Québec depuis 1966. Les cotisations des Québécois restent à Québec; la Caisse de dépôt et placement du Québec gère des dizaines de milliards. En indépendance, le Québec continuerait le RRQ sans interruption. Les droits acquis sont protégés par droit québécois et international. Le CPP serait négociable mais sécurisé.",
+    sources: ["Régie des rentes du Québec | https://www.rrq.gouv.qc.ca/", "CDPQ | https://www.cdpq.com/", "Services Canada - CPP | https://www.canada.ca/fr/"]
   },
   {
-    "id": 6,
-    "category": "RRQ vs CPP",
-    "claim": "« Les retraités québécois perdraient leur pension de retraite si le Québec devient souverain »",
-    "context": "Peur que les droits acquis (CPP/RRQ) disparaissent lors d'une indépendance",
-    "rebuttal": "Le Régime de rentes du Québec (RRQ) est déjà géré par le Québec depuis 1966. Les cotisations des Québécois au RRQ restent à Québec (Caisse de dépôt et placement du Québec gère des dizaines de milliards). En indépendance, le Québec continuerait simplement le RRQ. Les droits acquis sont protégés par droit québécois et international. Le CPP (Régime canadien) pour les contribuables fédéraux serait l'équivalent d'une pension fédérale — négociable mais sécurisé.",
-    "sources": [
-      "Régie des rentes du Québec (RRQ) | https://www.rrq.gouv.qc.ca/",
-      "Caisse de dépôt et placement du Québec | https://www.cdpq.com/",
-      "Services Canada - CPP | https://www.canada.ca/fr/",
-      "Analyses juridiques UQAM - Droits acquis"
-    ]
+    id: 6,
+    category: "Droits & Libertés",
+    claim: "« La Charte des droits disparaîtrait, les Québécois perdraient leurs droits »",
+    context: "Crainte que l'indépendance signifie fin des protections légales.",
+    rebuttal: "Un Québec souverain aurait sa propre charte constitutionnelle ou constitutionnaliserait les droits existants. La Charte québécoise (1975) est ANTÉRIEURE à la Charte canadienne (1982) et tout aussi solide. D'autres États souverains (France, Suède, Nouvelle-Zélande) protègent les droits mieux qu'avant leur indépendance. Aucune nation indépendante n'a régressé juridiquement après l'indépendance.",
+    sources: ["Charte québécoise | https://www.quebec.ca/", "Conseil ONU droits | https://www.ohchr.org/"]
   },
   {
-    "id": 7,
-    "category": "Droits & Libertés",
-    "claim": "« La Charte des droits et libertés disparaîtrait, les Québécois perdraient leurs droits »",
-    "context": "Crainte que l'indépendance signifie fin des protections légales",
-    "rebuttal": "Un Québec souverain aurait sa propre charte ou constitutionnaliserait les droits existants. La Charte québécoise (1975) est antérieure à la Charte canadienne (1982) et tout aussi solide. D'autres États souverains (France, Suède, Nouvelle-Zélande) protègent les droits mieux qu'avant leur indépendance grâce à des constitutions fortes. Aucune nation indépendante n'a régressé juridiquement après l'indépendance.",
-    "sources": [
-      "Charte québécoise des droits et libertés de la personne | https://www.quebec.ca/",
-      "Charte canadienne des droits et libertés | https://laws-lois.justice.gc.ca/",
-      "Conseil des droits de l'homme (ONU) | https://www.ohchr.org/"
-    ]
+    id: 7,
+    category: "Emploi & Chômage",
+    claim: "« L'indépendance causerait une augmentation massive du chômage »",
+    context: "Prédiction d'effondrement de l'emploi post-référendaire.",
+    rebuttal: "Les données post-référendum 1995 montrent que le Québec a continué sa croissance d'emploi (2000-2020). Les micro-États (Luxembourg 0.67M, Islande 0.38M) connaissent des taux de chômage parmi les plus bas au monde. Les secteurs clés du Québec (aérospatiale, biotech, énergie) sont mondialement compétitifs et bénéficieraient d'une politique économique autonome.",
+    sources: ["Statistiques Canada - Emploi | https://www.statcan.gc.ca/", "OCDE - Labour Stats | https://www.oecd.org/"]
   },
   {
-    "id": 8,
-    "category": "Emploie & Bien être",
-    "claim": "« L'indépendance causerait une augmentation massive du chômage »",
-    "context": "Prédiction d'effondrement de l'emploi post-référendaire",
-    "rebuttal": "Les données économiques post-référendaires (1995) montrent que le Québec a continué sa croissance d'emploi durant les années 2000-2020. Les modèles d'autres micro-États (Luxembourg, Islande) montrent que l'indépendance n'entraîne pas de chômage structurel. Les secteurs clés du Québec (aérospatiale, biotech, énergie) sont compétitifs et bénéficieraient d'une politique économique autonome. Les études économétriques ne montrent pas de corrélation causal entre indépendance et chômage.",
-    "sources": [
-      "Statistiques Canada - Taux de chômage provinciaux | https://www.statcan.gc.ca/",
-      "OCDE - Labour Force Statistics | https://www.oecd.org/",
-      "Décrochage-chômage Québec 1995-2020 (données historiques) | Archives"
-    ]
+    id: 8,
+    category: "Commerce International",
+    claim: "« Un Québec indépendant ne pourrait pas commercer avec le Canada »",
+    context: "Argument que les tarifs détruiraient le commerce interprovincial.",
+    rebuttal: "Les échanges commerciaux entre États indépendants sont la NORME (Canada-USA, Suisse-UE). L'intérêt économique pousse au libre-échange. Un accord commercial Québec-Canada post-indépendance est pratiquement inévitable (modèle: union douanière ou traité bilatéral). Estimations: le commerce Québec-Canada pourrait augmenter car le Québec pourrait négocier directement avec d'autres partenaires.",
+    sources: ["OMC - Accords commerciaux | https://www.wto.org/", "CIRANO | https://www.cirano.qc.ca/"]
+  },
+  {
+    id: 9,
+    category: "Ressources Naturelles",
+    claim: "« Le Québec n'a pas assez de ressources naturelles pour survivre »",
+    context: "Minimisation des actifs québécois.",
+    rebuttal: "Le Québec a des ressources MAJEURES: hydroélectricité (1er producteur nord-américain), forêts boréales (~27 % couvert forestier Canada), minéraux (lithium, cobalt, cuivre), eaux douces (15 % réserves mondiales). Hydro-Québec seul génère des surplus énergétiques exportables vers USA. Ces actifs donnent au Québec un pouvoir économique CONSIDÉRABLE.",
+    sources: ["Hydro-Québec | https://www.hydroquebec.com/", "Ressources naturelles Canada | https://www.rncan.gc.ca/"]
+  },
+  {
+    id: 10,
+    category: "Immigration & Démographie",
+    claim: "« Le Québec perdrait le contrôle de l'immigration »",
+    context: "Crainte d'une immigration incontrôlée imposée par le fédéral.",
+    rebuttal: "Le Québec contrôle DÉJÀ partiellement son immigration via l'Accord Gagnon-Tremblay (1991). Un Québec souverain aurait contrôle complet. Historiquement, la population québécoise est stable/croissante. Aucune nation n'a perdu sa viabilité démographique par indépendance. Les petites nations (Suisse, Belgique) maintiennent leurs démographies sans problème.",
+    sources: ["Immigration Canada | https://www.canada.ca/fr/", "Institut statistique Québec | https://www.stat.gouv.qc.ca/"]
+  },
+  {
+    id: 11,
+    category: "Infrastructure",
+    claim: "« Le Québec ne pourrait pas maintenir ses infrastructures seul »",
+    context: "Dépendance perçue aux programmes fédéraux.",
+    rebuttal: "Le Québec contribue davantage aux programmes fédéraux qu'il ne reçoit. Les provinces australiennes (plus petites que Québec) gèrent leurs infrastructures. Un Québec souverain aurait les revenus nécessaires (routes, ponts, transit, électricité). L'efficacité pourrait même s'améliorer grâce à une gouvernance centralisée.",
+    sources: ["Infrastructure Canada | https://www.canada.ca/fr/", "Ministère Transports Québec | https://www.transports.gouv.qc.ca/"]
+  },
+  {
+    id: 12,
+    category: "Langue & Culture",
+    claim: "« Un Québec indépendant verrait sa langue et culture disparaître »",
+    context: "Crainte que sans le Canada, le français decline.",
+    rebuttal: "C'est l'inverse. Le Québec indépendant aurait un contrôle total sur ses politiques linguistiques (actuellement limité par les droits fédéraux). Les États-nations protègent mieux leurs minorités linguistiques. La Belgique, Suisse, Catalogne (aspirée) protègent les langues minoritaires plus efficacement que dans des cadres fédéraux.",
+    sources: ["UNESCO - Language Preservation | https://en.unesco.org/", "OQLF Données | https://www.oqlf.gouv.qc.ca/"]
+  },
+  {
+    id: 13,
+    category: "Environnement & Énergie",
+    claim: "« Le Québec ne pourrait pas atteindre ses objectifs climatiques seul »",
+    context: "Argument que les ententes fédérales sont nécessaires.",
+    rebuttal: "Le Québec a DÉJÀ les institutions pour la politique environnementale (MELCCFP). L'énergie hydroélectrique du Québec est parmi les plus bas-carbone au monde. Un Québec souverain négocierait directement les accords climatiques (comme la Suisse, la Belgique le font). Le Québec pourrait fixer des standards environnementaux plus ambitieux.",
+    sources: ["Ministère Environnement Québec | https://www.quebec.ca/", "Accord de Paris | https://unfccc.int/"]
+  },
+  {
+    id: 14,
+    category: "Marché du Travail",
+    claim: "« L'indépendance détruirait les entreprises québécoises »",
+    context: "Peur que les entreprises s'expatrient.",
+    rebuttal: "Les données historiques montrent que les petites économies indépendantes sont souvent entrepreneuriales. Luxembourg, Singapour, Israël ont des écosystèmes d'innovation forts. Les avantages d'une politique économique autonome (impôts compétitifs, régulation adaptée) attireraient les investissements. Le Québec a déjà des secteurs forts (IA, jeux vidéo, aérospatiale).",
+    sources: ["Statistiques Canada - Entreprises | https://www.statcan.gc.ca/", "Conseil économique Québec | https://www.conseil.gouv.qc.ca/"]
+  },
+  {
+    id: 15,
+    category: "Sécurité Sociale",
+    claim: "« La sécurité sociale québécoise serait compromise »",
+    context: "Crainte d'une régression des services sociaux.",
+    rebuttal: "La sécurité sociale au Québec est administrée par le Québec (santé, éducation, services sociaux). L'indépendance n'affecterait pas ces programmes; elle donnerait au Québec plus de flexibilité pour les adapter. Les pays nordiques (Suède, Danemark) ont des systèmes sociaux parmi les meilleurs au monde. L'indépendance politique permet une meilleure gestion social.",
+    sources: ["Ministère Santé Québec | https://www.quebec.ca/", "Santé Canada | https://www.canada.ca/fr/", "OCDE - Social Spending | https://www.oecd.org/"]
   }
 ];
 
-let currentFilter = null;
+let allDebunks = [...debunks];
+let filteredDebunks = [...debunks];
 
-function renderSidebar() {
-  const categories = [...new Set(debunks.map(d => d.category))].sort();
-  const sidebar = document.getElementById('sidebar');
-  sidebar.innerHTML = `
-    <div class="category">
-      <h3>Catégories</h3>
-      <button onclick="filterCategory(null)" class="active">Tous</button>
-      ${categories.map(cat => `<button onclick="filterCategory('${cat}')">${cat}</button>`).join('')}
+function initApp() {
+  renderStats();
+  renderSidebar();
+  renderDebunks();
+  populateCategoryFilter();
+}
+
+function renderStats() {
+  const statsDiv = document.getElementById('stats');
+  const categories = new Set(allDebunks.map(d => d.category)).size;
+  const sources = allDebunks.reduce((sum, d) => sum + d.sources.length, 0);
+  
+  statsDiv.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-number">${allDebunks.length}</div>
+      <div class="stat-label">Débunks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">${categories}</div>
+      <div class="stat-label">Catégories</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">${sources}</div>
+      <div class="stat-label">Sources</div>
     </div>
   `;
 }
 
-function filterCategory(cat) {
-  currentFilter = cat;
-  renderList();
-  document.querySelectorAll('aside button').forEach(b => b.classList.remove('active'));
-  if (!cat) {
-    document.querySelector('aside button').classList.add('active');
-  } else {
-    document.querySelectorAll('aside button').forEach(b => {
-      if (b.textContent === cat) b.classList.add('active');
-    });
-  }
+function renderSidebar() {
+  const categories = [...new Set(allDebunks.map(d => d.category))].sort();
+  const sidebar = document.getElementById('sidebar');
+  
+  sidebar.innerHTML = `
+    <div class="sidebar-section">
+      <div class="sidebar-title">Catégories</div>
+      <button class="sidebar-btn active" onclick="filterBySidebar(null)">Tous</button>
+      ${categories.map(cat => `<button class="sidebar-btn" onclick="filterBySidebar('${cat}')">${cat}</button>`).join('')}
+    </div>
+  `;
 }
 
-function renderList() {
+function populateCategoryFilter() {
+  const categories = [...new Set(allDebunks.map(d => d.category))].sort();
+  const select = document.getElementById('categoryFilter');
+  select.innerHTML = '<option value="">Toutes les catégories</option>' + 
+    categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+  select.addEventListener('change', filterDebunks);
+}
+
+function filterBySidebar(cat) {
+  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('categoryFilter').value = cat || '';
+  filterDebunks();
+}
+
+function filterDebunks() {
   const search = document.getElementById('search').value.toLowerCase();
-  const filtered = debunks.filter(d => {
-    const matchCat = !currentFilter || d.category === currentFilter;
+  const category = document.getElementById('categoryFilter').value;
+  
+  filteredDebunks = allDebunks.filter(d => {
+    const matchCat = !category || d.category === category;
     const matchSearch = !search || d.claim.toLowerCase().includes(search) || d.category.toLowerCase().includes(search);
     return matchCat && matchSearch;
   });
+  
+  renderDebunks();
+}
 
+function renderDebunks() {
   const list = document.getElementById('debunk-list');
-  list.innerHTML = filtered.length ? filtered.map(d => `
-    <div class="debunk-item" onclick="showDetail(${d.id})">
-      <div class="debunk-category">${d.category}</div>
-      <div class="debunk-claim">${d.claim}</div>
-      <div class="debunk-meta">Débunké • ${d.sources.length} source${d.sources.length > 1 ? 's' : ''}</div>
+  const empty = document.getElementById('empty-state');
+  
+  if (filteredDebunks.length === 0) {
+    list.style.display = 'none';
+    empty.style.display = 'block';
+    empty.innerHTML = '<h2>Aucun résultat</h2><p>Essayez une autre recherche</p>';
+    return;
+  }
+  
+  list.style.display = 'grid';
+  empty.style.display = 'none';
+  
+  list.innerHTML = filteredDebunks.map(d => `
+    <div class="card" onclick="showDetail(${d.id})">
+      <div class="badge">${d.category}</div>
+      <h3 class="card-title">${d.claim}</h3>
+      <div class="card-meta">📌 ${d.sources.length} source${d.sources.length > 1 ? 's' : ''}</div>
     </div>
-  `).join('') : '<p style="color: #999; padding: 2rem; text-align: center;">Aucun résultat.</p>';
+  `).join('');
 }
 
 function showDetail(id) {
-  const debunk = debunks.find(d => d.id === id);
+  const debunk = allDebunks.find(d => d.id === id);
   if (!debunk) return;
-
-  const detail = document.getElementById('debunk-detail');
+  
+  document.getElementById('debunk-list').style.display = 'none';
+  document.getElementById('empty-state').style.display = 'none';
+  
+  const detail = document.getElementById('detail-view');
   detail.innerHTML = `
-    <button onclick="backToList()" style="margin-bottom: 1.5rem;">← Retour</button>
-    <h2>${debunk.claim}</h2>
+    <button class="btn-secondary" onclick="backToList()">← Retour aux résultats</button>
     
-    <div class="section">
-      <h3>Contexte</h3>
+    <div class="detail-header">
+      <span class="badge">${debunk.category}</span>
+      <h1>${debunk.claim}</h1>
+    </div>
+    
+    <div class="detail-section">
+      <h3>📍 Contexte</h3>
       <p>${debunk.context}</p>
     </div>
-
-    <div class="section">
-      <h3>Réfutation</h3>
+    
+    <div class="detail-section">
+      <h3>✅ Réfutation</h3>
       <p>${debunk.rebuttal}</p>
     </div>
-
-    <div class="section">
-      <h3>Sources</h3>
-      <div class="sources">
+    
+    <div class="detail-section">
+      <h3>📚 Sources</h3>
+      <ul class="sources-list">
         ${debunk.sources.map(s => {
           const parts = s.split(' | ');
           const title = parts[0] || 'Source';
           const url = parts[1] || '';
-          return `<div class="source">• <strong>${title}</strong> ${url ? `<a href="${url}" target="_blank" rel="noopener">🔗</a>` : ''}</div>`;
+          return `<li>
+            <strong>${title}</strong>
+            ${url ? `<a href="${url}" target="_blank" rel="noopener">🔗 lien</a>` : ''}
+          </li>`;
         }).join('')}
-      </div>
+      </ul>
     </div>
-
-    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
-      <button onclick="openEditModal(${id})">Éditer</button>
-      <button onclick="deleteDebunk(${id})" style="color: #d32f2f;">Supprimer</button>
+    
+    <div style="display: flex; gap: 1rem;">
+      <button class="btn-secondary" onclick="openEditModal(${id})">Éditer</button>
+      <button class="btn-secondary" onclick="deleteDebunk(${id})" style="color: #d32f2f;">Supprimer</button>
     </div>
   `;
   detail.classList.add('show');
-  document.getElementById('debunk-list').style.display = 'none';
 }
 
 function backToList() {
-  document.getElementById('debunk-detail').classList.remove('show');
-  document.getElementById('debunk-list').style.display = 'block';
+  document.getElementById('detail-view').classList.remove('show');
+  document.getElementById('debunk-list').style.display = 'grid';
 }
 
 function openAddModal() {
-  document.getElementById('modal-title').textContent = 'Ajouter un debunk';
+  document.getElementById('modal-title').textContent = 'Ajouter un débunk';
   document.getElementById('form-category').value = '';
   document.getElementById('form-claim').value = '';
   document.getElementById('form-context').value = '';
@@ -343,8 +627,8 @@ function openAddModal() {
 }
 
 function openEditModal(id) {
-  const debunk = debunks.find(d => d.id === id);
-  document.getElementById('modal-title').textContent = 'Éditer ce debunk';
+  const debunk = allDebunks.find(d => d.id === id);
+  document.getElementById('modal-title').textContent = 'Éditer ce débunk';
   document.getElementById('form-category').value = debunk.category;
   document.getElementById('form-claim').value = debunk.claim;
   document.getElementById('form-context').value = debunk.context;
@@ -364,45 +648,49 @@ function saveDebunk() {
   const context = document.getElementById('form-context').value.trim();
   const rebuttal = document.getElementById('form-rebuttal').value.trim();
   const sourceText = document.getElementById('form-sources').value.trim();
-
+  
   if (!category || !claim || !rebuttal) {
     alert('Remplissez: catégorie, affirmation et réfutation');
     return;
   }
-
+  
   const sources = sourceText.split('\n').filter(s => s.trim());
   const editId = document.getElementById('modal').dataset.editId;
-
+  
   if (editId) {
-    const idx = debunks.findIndex(d => d.id == editId);
-    debunks[idx] = { ...debunks[idx], category, claim, context, rebuttal, sources };
+    const idx = allDebunks.findIndex(d => d.id == editId);
+    allDebunks[idx] = { ...allDebunks[idx], category, claim, context, rebuttal, sources };
   } else {
-    debunks.push({
-      id: Math.max(...debunks.map(d => d.id), 0) + 1,
+    allDebunks.push({
+      id: Math.max(...allDebunks.map(d => d.id), 0) + 1,
       category, claim, context, rebuttal, sources
     });
   }
-
-  localStorage.setItem('debunks', JSON.stringify(debunks));
+  
+  localStorage.setItem('debunks', JSON.stringify(allDebunks));
   closeModal();
+  renderStats();
   renderSidebar();
-  renderList();
+  populateCategoryFilter();
+  filterDebunks();
   backToList();
 }
 
 function deleteDebunk(id) {
-  if (!confirm('Supprimer ce debunk?')) return;
-  debunks = debunks.filter(d => d.id !== id);
-  localStorage.setItem('debunks', JSON.stringify(debunks));
+  if (!confirm('Supprimer ce débunk?')) return;
+  allDebunks = allDebunks.filter(d => d.id !== id);
+  localStorage.setItem('debunks', JSON.stringify(allDebunks));
+  renderStats();
   renderSidebar();
-  renderList();
+  populateCategoryFilter();
+  filterDebunks();
   backToList();
 }
 
-document.getElementById('search').addEventListener('input', renderList);
+document.getElementById('search').addEventListener('input', filterDebunks);
 
-renderSidebar();
-renderList();
+initApp();
 </script>
+
 </body>
 </html>
